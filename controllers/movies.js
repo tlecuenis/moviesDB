@@ -12,14 +12,17 @@ class MovieController {
     
     getById = (req, res) => {
         const { id } = req.params
-        const movie = this.movieModel.getById({ id }, callback => res.json(callback))
-        
-        if(!movie) return res.status(404).json({ message: 'Movie not found' })
-        //res.status(404).json({ message: 'Movie not found' })
+        const movie = this.movieModel.getById({ id }, callback => {
+            if (callback.length === 0) return res.status(404).json({ message: 'Movie not found' })
+            console.log(callback)
+            res.json(callback)
+        })
     }
 
     create = (req, res) => {
         const result = validateMovie(req.body)
+        console.log("result", result)
+        console.log("req body", req.body)
 
         if(result.error) return res.status(400).json({ error: JSON.parse(result.error.message) })
 

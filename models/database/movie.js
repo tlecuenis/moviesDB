@@ -57,6 +57,7 @@ class MovieModel {
     }
 
     static getById ({ id }, callback) {
+        //cuando el id es incorrecto da error acá
         connection.query('SELECT title, year, director, duration, poster, rate, BIN_TO_UUID(id) id FROM movie WHERE id = UUID_TO_BIN(?);', [id], function (error, results) {
             if (error) throw error
             callback(results)
