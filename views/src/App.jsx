@@ -34,17 +34,6 @@ export function App() {
           element={<AddMovie/>}
           />
 
-          {/* <Route
-          path='/movies/modify'
-          element={<ModMovie/>}
-          />
-
-          <Route
-          path='/movies/delete'
-          element={<DelMovie/>}
-          
-          /> */}
-
       </Routes>
     </>
     

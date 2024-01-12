@@ -85,7 +85,8 @@ export function Home(){
                     director={movie.director} 
                     duration={movie.duration} 
                     year={movie.year} 
-                    rate={movie.rate} />
+                    rate={movie.rate} 
+                    genre_id={movie.genre_id}/>
                 ))
             }
             </section>

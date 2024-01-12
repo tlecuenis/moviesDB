@@ -1,0 +1,9 @@
+.genre{
+    margin: 0;
+    padding: 2px 5px;
+    background-color: lightgray;
+}
+.genre p{
+    font-size: 0.8rem;
+    margin: 0;
+}

@@ -14,7 +14,6 @@ class MovieController {
         const { id } = req.params
         const movie = this.movieModel.getById({ id }, callback => {
             if (callback.length === 0) return res.status(404).json({ message: 'Movie not found' })
-            console.log(callback)
             res.json(callback)
         })
     }
@@ -31,7 +30,10 @@ class MovieController {
 
     update = (req, res) => {
         const { id } = req.params 
+        //Acá llegan bien el genre_id
         const result = validatePartialMovie(req.body)
+        console.log(result)
+        // Luego del validatePartialMovie se saca el genre_id
         if(result.error) return res.status(400).json({ error: JSON.parse(result.error.message) })
         const updatedMovie = this.movieModel.update({ id, input: result.data }, callback => res.json(callback))
     }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams, Link } from "react-router-dom"
+import './one.css'
 
 export function One(){
     const [dataOne, setDataOne] = useState([])
@@ -12,7 +13,15 @@ export function One(){
         duration: 0,
         poster: "",
         rate: 0,
-        genre: []
+        genre_id: []
+    })
+    const [defaultCheck, setDefaultCheck] = useState({
+        "Horror": false,
+        "Crime": false,
+        "SciFi": false,
+        "Adventure": false,
+        "Action": false,
+        "Drama": false
     })
 
     const {id} = useParams()
@@ -20,23 +29,38 @@ export function One(){
     useEffect(() =>{
         fetch(`http://localhost:3000/movies/${id}`)
           .then(res => res.json())
-          .then(data => setDataOne(data))
+          .then(data => {
+            setDataOne(data)
+            let check = defaultCheck
+            data[0].genre_id.map(genre => {
+            check[genre] = true
+            })
+            setDefaultCheck(check)
+          })
           .catch(err => console.log(err))
           .finally(() => setLoading(false))
     }, [])
     
-    
+
     const handleClick = () =>{
-        setModify(!modify)
-        setValues({
-            title: dataOne[0].title,
-            year: dataOne[0].year,
-            director: dataOne[0].director,
-            duration: dataOne[0].duration,
-            poster: dataOne[0].poster,
-            rate: dataOne[0].rate
-        })
+        if (dataOne[0].title == 'The Matrix' || dataOne[0].title == 'Gladiator'){
+            alert('No se pueden modificar las siguientes peliculas: The Matrix y Gladiator')
+        } else{
+
+            setModify(!modify)
+            setValues({
+                title: dataOne[0].title,
+                year: dataOne[0].year,
+                director: dataOne[0].director,
+                duration: dataOne[0].duration,
+                poster: dataOne[0].poster,
+                rate: dataOne[0].rate,
+                genre_id: dataOne[0].genre_id
+            })
+            console.log(defaultCheck)
+        }
     }
+
     const handleChange = (e) =>{
         const {name, value} = e.target
         
@@ -44,8 +68,26 @@ export function One(){
             ...prevValues,
             [name]: value
         }))
-        console.log(values)
+        // console.log(values)
     }
+
+    const handleChangeCheckbox = (e) => {
+        const {value} = e.target
+        if (e.target.checked) {
+            setValues(prevValues => ({
+                ...prevValues,
+                genre_id: [...values.genre_id, value]
+            }))
+        } else {
+            const newValue = values.genre_id.filter(item => item !== value)
+            setValues(prevValues => ({
+                ...prevValues,
+                genre_id: newValue
+            }))
+        }
+        // console.log(values)
+    }
+
     const handleSubmit = (e) =>{
         e.preventDefault()
         
@@ -55,18 +97,22 @@ export function One(){
             duration: Number(values.duration),
             rate: Number(values.rate)
         }
-        console.log(newValues)
+        // console.log(newValues)
         setValues(newValues)
         fetch(`http://localhost:3000/movies/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(newValues),
             headers: { "Content-Type": "application/json" },
         })
-            .then(() => console.log('actualizado'))
-            .catch(err => console.log(err))
+            .then(() => {
+                alert('Los parámetros se han actualizado, refresque para ver los cambios')
+            })
+            .catch(err => {
+                console.log(err)
+                alert('No se han podido guardar los cambios')
+            })
             .finally(() => {
                 setModify(false)
-                alert('Refresque para ver los nuevos cambios')
             })
     }
 
@@ -75,45 +121,80 @@ export function One(){
             {loading == true && <li>Loading...</li>}
             {(dataOne.length > 0 && modify == false) && (<article className='open'>
                 <div className='open-container'>
-                    <Link to='/movies'> X </Link>
-                    <div className="img-container">
-                        {console.log(dataOne[0].poster)}
-                        <img src={dataOne[0].poster} alt={dataOne[0].title} />
-                    </div>
+                    <Link className="links arrow" to='/movies'> &larr; </Link>
                     <h3 className="title">{dataOne[0].title}</h3>
-                    <div className='flex'>
-                        <p>Director: {dataOne[0].director}</p>
-                        <p>Duration: {dataOne[0].duration} min</p>
-                        <p>Year: {dataOne[0].year}</p>
-                        <p>Rate: {dataOne[0].rate}</p>
+                    <div className="columns-container">
+
+                        <div className="img-container">
+                            {console.log(dataOne[0].poster)}
+                            <img src={dataOne[0].poster} alt={dataOne[0].title} />
+                        </div>
+                        
+                        <div className='flex'>
+                            <p><span>Director:</span> {dataOne[0].director}</p>
+                            <p><span>Duration:</span> {dataOne[0].duration} min</p>
+                            <p><span>Year:</span> {dataOne[0].year}</p>
+                            <p><span>Rate:</span> {dataOne[0].rate}</p>
+                            <p><span>Genres:</span> {dataOne[0].genre_id.toString()}</p>
+                            <button onClick={handleClick} className="modify-button">Modificar</button>
+                        </div>
+                        
                     </div>
                     
                 </div>
-                <button onClick={handleClick}>Modificar</button>
             </article>)}
 
             {modify && (<article className='open'>
                 <form onSubmit={handleSubmit}>
                     <div className='open-container'>
-                        <label htmlFor="poster">Imagen</label>
-                        <input type="url" name="poster" placeholder="Coloque la imagen" onChange={handleChange} />
-                        <div className="img-container">        
-                            <img src={dataOne[0].poster} alt={dataOne[0].title} />
+                        <div className="columns-container columns-container-modify">
+                            <div className="img-container">    
+                            <label htmlFor="poster">Imagen</label>
+                            <input type="url" name="poster" placeholder="Coloque la imagen en jpg" onChange={handleChange} />    
+                                <img src={dataOne[0].poster} alt={dataOne[0].title} />
+                            </div>
+                            <div className='flex'>
+                                <label htmlFor="title">Titulo</label>
+                                <input type="text" name='title' placeholder={dataOne[0].title} onChange={handleChange}/>
+                                <label htmlFor="director">Director</label>
+                                <input type="text" name="director" placeholder={dataOne[0].director} onChange={handleChange} />
+                                <label htmlFor="duration">Duración</label>
+                                <input type="number" name="duration" placeholder={dataOne[0].duration} onChange={handleChange} />      
+                                <label htmlFor="year">Año</label>
+                                <input type="number" name="year" placeholder={dataOne[0].year} onChange={handleChange} />           
+                                <label htmlFor="rate">Nota</label>
+                                <input type="number" name="rate" placeholder={dataOne[0].rate} step="0.1" onChange={handleChange} />
+                                <fieldset id="genre" name="genre" onChange={handleChangeCheckbox} required>
+                                    <legend>Género</legend>
+                                    <label>
+                                        <input type="checkbox" id="horror" name="genre" value="Horror" defaultChecked = {defaultCheck.Horror}/>
+                                        Horror
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="crime" name="genre" value="Crime"  defaultChecked = {defaultCheck.Crime}/>
+                                        Crimen
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="scifi" name="genre" value="SciFi"  defaultChecked = {defaultCheck.SciFi}/>
+                                        Ciencia-Ficción
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="adventure" name="genre" value="Adventure"  defaultChecked = {defaultCheck.Adventure}/>
+                                        Aventura
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="action" name="genre" value="Action"  defaultChecked = {defaultCheck.Action}/>
+                                        Acción
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" id="drama" name="genre" value="Drama"  defaultChecked = {defaultCheck.Drama}/>
+                                        Drama
+                                    </label>
+                                </fieldset>
+                            </div>
                         </div>
-                        <label htmlFor="title">Titulo</label>
-                        <input type="text" name='title' placeholder={dataOne[0].title} onChange={handleChange}/>
-                        <div className='flex'>
-                            <label htmlFor="director">Director</label>
-                            <input type="text" name="director" placeholder={dataOne[0].director} onChange={handleChange} />
-                            <label htmlFor="duration">Duración</label>
-                            <input type="number" name="duration" placeholder={dataOne[0].duration} onChange={handleChange} />      
-                            <label htmlFor="year">Año</label>
-                            <input type="number" name="year" placeholder={dataOne[0].year} onChange={handleChange} />           
-                            <label htmlFor="rate">Nota</label>
-                            <input type="number" name="rate" placeholder={dataOne[0].rate} step="0.1" onChange={handleChange} />
-                        </div>
+                        <button type="submit" className="save-button">Guardar</button>
                     </div>
-                    <button type="submit">Guardar</button>
                 </form>
             </article>)}
 

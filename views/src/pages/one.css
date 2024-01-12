@@ -1,0 +1,15 @@
+.arrow{
+    align-self: flex-start;
+    font-size: 1.5rem;
+    font-weight: bolder;
+}
+
+form input{
+    height: 13px;
+}
+
+@media screen and (max-width: 531px) {
+    .arrow{
+        padding-left: 20px;
+    }
+}

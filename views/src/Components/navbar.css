@@ -1,3 +1,25 @@
 nav{
-    background-color: aqua;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #B5FFE9;
+
+}
+nav h3{
+    margin: 0px 0px 0px 30px;
+}
+
+ul{
+    display: flex;
+    list-style-type: none;
+    gap: 20px;
+    
+}
+
+.links{
+    text-decoration: none;
+    color: inherit;
+}
+.links:hover{
+    cursor: pointer;
 }

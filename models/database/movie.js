@@ -1,6 +1,8 @@
 // const mysql = require('mysql')
 const mysql = require('mysql2')
 const crypto = require('crypto')
+const { defaultErrorMap, number } = require('zod')
+const { Console } = require('console')
 require('dotenv/config')
 
 const DEFAULT_CONFIGURATION = {
@@ -46,11 +48,46 @@ class MovieModel {
                 })
             })
         } else{
-            const result = connection.query('SELECT BIN_TO_UUID(id) id, title, year, director, duration, poster, rate FROM movie', function (error, results) {
+            const GENRE_INDEX = [
+                'Drama',
+                'Action',
+                'Crime',
+                'Sci-Fi',
+                'Romance',
+                'Horror',
+                'Adventure',
+                'Biography',
+                'Fantasy',
+                'Thriller',
+                ]
+            const movies = []
+            const result = connection.query('SELECT DISTINCT BIN_TO_UUID(id) id, title, year, director, duration, poster, rate FROM movie INNER JOIN movie_genres ON id = movie_id', function (error, results) {
                 if (error) throw error
                 
-                callback(results)
+                results.map((resu, i) => {
+                    resu = {
+                        ...resu,
+                        genre_id: []
+                    }
+                    connection.query('SELECT genre_id FROM movie_genres WHERE UUID_TO_BIN(?) = movie_id', [resu.id], function (error, resultsGenres) {
+                        if (error) throw error
+                        resultsGenres.map(res => {
+                            res.genre_id = GENRE_INDEX[res.genre_id-1]
+                            resu = {
+                                ...resu,
+                                genre_id: [...resu.genre_id, res.genre_id]
+                            }
+                        })
+                        movies.push(resu)
+                        if (i === results.length - 1){
+                            callback(movies)
+                        }
+                        
+                    })
+                })
+                
             })
+        
             return result[0] //porque devuelve un array de dos posiciones, en la primera la respuesta
         }
         
@@ -58,9 +95,49 @@ class MovieModel {
 
     static getById ({ id }, callback) {
         //cuando el id es incorrecto da error acá
-        connection.query('SELECT title, year, director, duration, poster, rate, BIN_TO_UUID(id) id FROM movie WHERE id = UUID_TO_BIN(?);', [id], function (error, results) {
+        const GENRE_INDEX = [
+            'Drama',
+            'Action',
+            'Crime',
+            'Sci-Fi',
+            'Romance',
+            'Horror',
+            'Adventure',
+            'Biography',
+            'Fantasy',
+            'Thriller',
+            ]
+        const movies = []
+        connection.query('SELECT DISTINCT title, year, director, duration, poster, rate, BIN_TO_UUID(id) id FROM movie WHERE id = UUID_TO_BIN(?);', [id], function (error, results) {
             if (error) throw error
-            callback(results)
+            // callback(results)
+            //todo para abajo
+            results.map((resu) => {
+                // resu = {
+                //     ...resu,
+                //     genre_id: []
+                // }
+                resu.genre_id = []
+                connection.query('SELECT DISTINCT genre_id FROM movie_genres WHERE UUID_TO_BIN(?) = movie_id', [resu.id], function (error, resultsGenres) {
+                    if (error) throw error
+                    resultsGenres.map(res => {
+                        res.genre_id = GENRE_INDEX[res.genre_id-1]
+                        resu = {
+                            ...resu,
+                            genre_id: [...resu.genre_id, res.genre_id]
+                        }
+                    })
+                    // movies.push(resu)
+                    // if (i === results.length - 1){
+                    //     callback(movies)
+                    // }
+                    if (!movies.includes(resu)){
+                        movies.push(resu)
+                        callback(movies)
+                    }
+                    
+                })
+            })
         })
     }
 
@@ -68,7 +145,7 @@ class MovieModel {
         
         // obtener el genre según la película
         const {
-            genre: genreInput,
+            genre_id: genreInput,
             title,
             year,
             duration,
@@ -77,13 +154,32 @@ class MovieModel {
             rate
         } = input
 
-        // FALTA CONECTARLO CON LA TABLA GENRE
+        const uuid = crypto.randomUUID()
         
+        const GENRE_INDEX = [
+        'Drama',
+        'Action',
+        'Crime',
+        'Sci-Fi',
+        'Romance',
+        'Horror',
+        'Adventure',
+        'Biography',
+        'Fantasy',
+        'Thriller',
+        ]
 
+        // FALTA CONECTARLO CON LA TABLA GENRE
+        genreInput.map(gen => {
+            const genreIndex = GENRE_INDEX.findIndex(genIndex => genIndex === gen) + 1
+            connection.query(`INSERT INTO movie_genres (movie_id, genre_id) VALUES (UUID_TO_BIN('${uuid}'), ?);`, genreIndex, function (error, results) {
+                if (error) throw error
+            })
+        })
+        
         // Utilizar SQL es una buena opción para obtener uuid
         //const {uuidResult} = connection.query('SELECT UUID() uuid;', function (error, results) {
             
-        const uuid = crypto.randomUUID()
         
         try{
             connection.query(
@@ -101,10 +197,16 @@ class MovieModel {
     }
 
     static delete ({ id }, callback) {
+        connection.query('DELETE FROM movie_genres WHERE BIN_TO_UUID(movie_id) = (?);', [id], function (error, results) {
+            if (error) throw error
+            
+        })
+        
         connection.query('DELETE FROM movie WHERE BIN_TO_UUID(id) = (?);', [id], function (error, results) {
             if (error) throw error
             callback(results)
         })
+
     }
 
     static update ({ id, input }, callback) {
@@ -114,9 +216,34 @@ class MovieModel {
             director: input.director,
             duration: input.duration,
             poster: input.poster,
-            rate: input.rate
+            rate: input.rate,
+            genre_id: input.genre_id
         }
-        
+        //Acá nunca va a llegar pq no se lo entrega el controller
+
+        //elimina de la tabla genre todas las peliculas
+        connection.query('DELETE FROM movie_genres WHERE BIN_TO_UUID(movie_id) = (?);', [id], function (error, results) {
+            if (error) throw error
+        })
+        //vuelve a agregar los nuevos géneros
+        const GENRE_INDEX = [
+            'Drama',
+            'Action',
+            'Crime',
+            'Sci-Fi',
+            'Romance',
+            'Horror',
+            'Adventure',
+            'Biography',
+            'Fantasy',
+            'Thriller',
+        ]
+        input.genre_id.map(gen => {
+            const genreIndex = GENRE_INDEX.findIndex(genIndex => genIndex === gen) + 1
+            connection.query(`INSERT INTO movie_genres (movie_id, genre_id) VALUES (UUID_TO_BIN(?), ?);`, [id, genreIndex], function (error, results) {
+                if (error) throw error
+            })
+        })
         connection.query(`UPDATE movie SET title=IFNULL(?, title), year=IFNULL(?, year), director=IFNULL(?, director), duration=IFNULL(?, duration), poster=IFNULL(?, poster), rate=IFNULL(?, rate) WHERE id = UUID_TO_BIN(?);`, [input.title, input.year, input.director, input.duration, input.poster, input.rate, id], function (error, results) {
             if (error) throw error
         })
