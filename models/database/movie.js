@@ -5,15 +5,21 @@ const { defaultErrorMap, number } = require('zod')
 const { Console } = require('console')
 require('dotenv/config')
 
-const DEFAULT_CONFIGURATION = {
-    host: 'localhost',
-    user: 'root',
-    port: 3306,
-    password: 'password',
-    database: 'moviesdb'
+const DB_HOST = process.env.DB_HOST || 'localhost'
+const DB_USER = process.env.DB_USER || 'root'
+const DB_PORT = process.env.DB_PORT || 3306
+const DB_PASSWORD = process.env.DB_PASSWORD || 'password'
+const DB_DATABASE = process.env.DB_DATABASE || 'moviesdb'
+
+const DB_CONFIGURATION = {
+    host: DB_HOST,
+    user: DB_USER,
+    port: DB_PORT,
+    password: DB_PASSWORD,
+    database: DB_DATABASE
 }
 
-const config = process.env.DATABASE_URL ?? DEFAULT_CONFIGURATION
+const config = DB_CONFIGURATION
 
 const connection = mysql.createConnection(config)
 

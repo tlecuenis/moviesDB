@@ -15,7 +15,7 @@ import { Genre } from './Genre.jsx'
 // DISEÑO DE FRONT
 // ✅ Modificar Nav
 // ✅ Modificar diseño de peliculas individuales
-// ❌ Separar los campos label del input del form
+// ✅ Separar los campos label del input del form
 // ✅ Hacer un breakpoint de > 647 para hacer una sola columna del form
 // LÓGICA DE BACK
 // ✅ Sincronizar la tabla peliculas con la tabla genre getAll sin genre
@@ -26,6 +26,7 @@ import { Genre } from './Genre.jsx'
 // ❌ Cambiar nombre de sci-fi en todos lados pq trae error (o poner scifi y antes de enviar en el fetch cambiarlo a sci-fi) 
 // ❌ Obtener los generos en vez de poner la constante GENRE_INDEX
 // ✅ No dejar que se eliminen the matrix y gladiator
+// ❌ Subir a hosting gratuito mysql
 
 
 export function Movie ({ id, poster, title, director, duration, year, rate, genre_id }) {
