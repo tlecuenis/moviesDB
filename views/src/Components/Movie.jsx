@@ -23,10 +23,11 @@ import { Genre } from './Genre.jsx'
 // ✅ Sincronizar la tabla peliculas con la tabla genre create
 // ✅ Sincronizar la tabla peliculas con la tabla genre update
 // ✅ Sincronizar la tabla peliculas con la tabla genre delete
-// ❌ Cambiar nombre de sci-fi en todos lados pq trae error (o poner scifi y antes de enviar en el fetch cambiarlo a sci-fi) 
+// ✅ Cambiar nombre de sci-fi en todos lados pq trae error (o poner scifi y antes de enviar en el fetch cambiarlo a sci-fi) 
 // ❌ Obtener los generos en vez de poner la constante GENRE_INDEX
 // ✅ No dejar que se eliminen the matrix y gladiator
 // ❌ Subir a hosting gratuito mysql
+// ✅ hacer cambios para que funcione en local
 
 
 export function Movie ({ id, poster, title, director, duration, year, rate, genre_id }) {

@@ -1,7 +1,6 @@
 const movies = require('../../movies.json')
 const crypto = require('node:crypto')
 
-
 class MovieModel {
     static async getAll ({ genre }, callback) { //los parámetros se pasan como objetos para que en un futuro sea más facil extender
         if (genre){

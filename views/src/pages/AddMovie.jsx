@@ -107,7 +107,7 @@ export function AddMovie(){
                     Crimen
                 </label>
                 <label>
-                    <input type="checkbox" id="sci-fi" name="genre" value="Sci-Fi" />
+                    <input type="checkbox" id="scifi" name="genre" value="SciFi" />
                     Ciencia-Ficción
                 </label>
                 <label>

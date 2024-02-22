@@ -11,12 +11,12 @@ const movieSchema = z.object({
     poster: z.string().url({
         message: 'Poster must be a valid URL'
     }),
-    // genre: z.array(z.enum(['Action', 'Crime', 'Drama', 'Adventure', 'Sci-Fi', 'Thriller','Comedy', 'Horror', 'Fantasy', 'Romance']),
+    // genre: z.array(z.enum(['Action', 'Crime', 'Drama', 'Adventure', 'SciFi', 'Thriller','Comedy', 'Horror', 'Fantasy', 'Romance']),
     // {
     //     required_error: 'Movie genre is required',
     //     invalid_type_error: 'Movie genre must be an array of enum Genre'
     // }),
-    genre_id: z.array(z.enum(['Action', 'Crime', 'Drama', 'Adventure', 'Sci-Fi', 'Thriller','Comedy', 'Horror', 'Fantasy', 'Romance']),
+    genre_id: z.array(z.enum(['Action', 'Crime', 'Drama', 'Adventure', 'SciFi', 'Thriller','Comedy', 'Horror', 'Fantasy', 'Romance']),
     {
         required_error: 'Movie genre is required',
         invalid_type_error: 'Movie genre must be an array of enum Genre'

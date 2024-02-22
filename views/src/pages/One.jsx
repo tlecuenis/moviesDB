@@ -30,10 +30,20 @@ export function One(){
         fetch(`http://localhost:3000/movies/${id}`)
           .then(res => res.json())
           .then(data => {
-            setDataOne(data)
+            console.log("data", data)
+            if (data instanceof Array){
+                setDataOne(data)
+            } else{
+                setDataOne([data])
+            }
+            // setDataOne(data)
             let check = defaultCheck
-            data[0].genre_id.map(genre => {
-            check[genre] = true
+            const obtainedData = data[0] || data
+            // data[0].genre_id.map(genre => {
+            //     check[genre] = true
+            // })
+            obtainedData.genre_id.map(genre => {
+                check[genre] = true
             })
             setDefaultCheck(check)
           })
@@ -49,13 +59,13 @@ export function One(){
 
             setModify(!modify)
             setValues({
-                title: dataOne[0].title,
-                year: dataOne[0].year,
-                director: dataOne[0].director,
-                duration: dataOne[0].duration,
-                poster: dataOne[0].poster,
-                rate: dataOne[0].rate,
-                genre_id: dataOne[0].genre_id
+                title: dataOne[0].title || dataOne.title,
+                year: dataOne[0].year || dataOne.year,
+                director: dataOne[0].director || dataOne.director,
+                duration: dataOne[0].duration || dataOne.duration,
+                poster: dataOne[0].poster || dataOne.poster,
+                rate: dataOne[0].rate || dataOne.rate,
+                genre_id: dataOne[0].genre_id || dataOne.genre_id
             })
             console.log(defaultCheck)
         }
@@ -119,23 +129,26 @@ export function One(){
     return(
         <>
             {loading == true && <li>Loading...</li>}
-            {(dataOne.length > 0 && modify == false) && (<article className='open'>
+            {console.log("dataOne afuera",dataOne)}
+            {console.log("modify afuera",modify)}
+            {(dataOne.length != 0 && modify == false) && (<article className='open'>
+                {console.log("return adentro",dataOne)}
                 <div className='open-container'>
                     <Link className="links arrow" to='/movies'> &larr; </Link>
-                    <h3 className="title">{dataOne[0].title}</h3>
+                    <h3 className="title">{dataOne[0].title || dataOne.title}</h3>
                     <div className="columns-container">
 
                         <div className="img-container">
                             {console.log(dataOne[0].poster)}
-                            <img src={dataOne[0].poster} alt={dataOne[0].title} />
+                            <img src={dataOne[0].poster || dataOne.poster} alt={dataOne[0].title || dataOne.title} />
                         </div>
                         
                         <div className='flex'>
-                            <p><span>Director:</span> {dataOne[0].director}</p>
-                            <p><span>Duration:</span> {dataOne[0].duration} min</p>
-                            <p><span>Year:</span> {dataOne[0].year}</p>
-                            <p><span>Rate:</span> {dataOne[0].rate}</p>
-                            <p><span>Genres:</span> {dataOne[0].genre_id.toString()}</p>
+                            <p><span>Director:</span> {dataOne[0].director || dataOne.director}</p>
+                            <p><span>Duration:</span> {dataOne[0].duration || dataOne.duration} min</p>
+                            <p><span>Year:</span> {dataOne[0].year || dataOne.year}</p>
+                            <p><span>Rate:</span> {dataOne[0].rate || dataOne.rate}</p>
+                            <p><span>Genres:</span> {dataOne[0].genre_id.toString() || dataOne.genre_id.toString()}</p>
                             <button onClick={handleClick} className="modify-button">Modificar</button>
                         </div>
                         
@@ -151,19 +164,19 @@ export function One(){
                             <div className="img-container">    
                             <label htmlFor="poster">Imagen</label>
                             <input type="url" name="poster" placeholder="Coloque la imagen en jpg" onChange={handleChange} />    
-                                <img src={dataOne[0].poster} alt={dataOne[0].title} />
+                                <img src={dataOne[0].poster || dataOne.poster} alt={dataOne[0].title || dataOne.title} />
                             </div>
                             <div className='flex'>
                                 <label htmlFor="title">Titulo</label>
-                                <input type="text" name='title' placeholder={dataOne[0].title} onChange={handleChange}/>
+                                <input type="text" name='title' placeholder={dataOne[0].title || dataOne.title} onChange={handleChange}/>
                                 <label htmlFor="director">Director</label>
-                                <input type="text" name="director" placeholder={dataOne[0].director} onChange={handleChange} />
+                                <input type="text" name="director" placeholder={dataOne[0].director || dataOne.director} onChange={handleChange} />
                                 <label htmlFor="duration">Duración</label>
-                                <input type="number" name="duration" placeholder={dataOne[0].duration} onChange={handleChange} />      
+                                <input type="number" name="duration" placeholder={dataOne[0].duration || dataOne.duration} onChange={handleChange} />      
                                 <label htmlFor="year">Año</label>
-                                <input type="number" name="year" placeholder={dataOne[0].year} onChange={handleChange} />           
+                                <input type="number" name="year" placeholder={dataOne[0].year || dataOne.year} onChange={handleChange} />           
                                 <label htmlFor="rate">Nota</label>
-                                <input type="number" name="rate" placeholder={dataOne[0].rate} step="0.1" onChange={handleChange} />
+                                <input type="number" name="rate" placeholder={dataOne[0].rate || dataOne.rate} step="0.1" onChange={handleChange} />
                                 <fieldset id="genre" name="genre" onChange={handleChangeCheckbox} required>
                                     <legend>Género</legend>
                                     <label>
