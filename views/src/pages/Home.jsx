@@ -66,7 +66,7 @@ export function Home(){
     // ])
     const [data, setData] = useState([])
     useEffect(() =>{
-      fetch('http://localhost:3000/movies')
+      fetch('http://localhost:10000/movies')
         .then(res => res.json())
         .then(data => setData(data))
         .catch(err => console.log(err))

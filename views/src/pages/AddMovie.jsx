@@ -14,7 +14,7 @@ export function AddMovie(){
     const [data, setData] = useState([])
     // const [titles, setTitles] = useState([])
     useEffect(() =>{
-      fetch('http://localhost:3000/movies')
+      fetch('http://localhost:10000/movies')
         .then(res => res.json())
         .then(data => setData(data))
         .catch(err => console.log(err))
@@ -63,7 +63,7 @@ export function AddMovie(){
         setValues(newValues)
         //logica titulo
         if (!movieTitle.includes(newValues.title)){
-            fetch('http://localhost:3000/movies', {
+            fetch('http://localhost:10000/movies', {
                 method: 'POST',
                 body: JSON.stringify(newValues),
                 headers: { "Content-Type": "application/json" },
