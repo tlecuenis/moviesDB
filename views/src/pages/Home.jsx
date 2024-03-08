@@ -66,7 +66,7 @@ export function Home(){
     // ])
     const [data, setData] = useState([])
     useEffect(() =>{
-      fetch('http://localhost:10000/movies')
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/movies`)
         .then(res => res.json())
         .then(data => setData(data))
         .catch(err => console.log(err))

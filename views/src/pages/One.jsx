@@ -27,7 +27,7 @@ export function One(){
     const {id} = useParams()
     
     useEffect(() =>{
-        fetch(`http://localhost:10000/movies/${id}`)
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/movies/${id}`)
           .then(res => res.json())
           .then(data => {
             console.log("data", data)
@@ -109,7 +109,7 @@ export function One(){
         }
         // console.log(newValues)
         setValues(newValues)
-        fetch(`http://localhost:10000/movies/${id}`, {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/movies/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(newValues),
             headers: { "Content-Type": "application/json" },

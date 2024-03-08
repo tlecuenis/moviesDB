@@ -37,7 +37,7 @@ export function Movie ({ id, poster, title, director, duration, year, rate, genr
         } else{
             var result = confirm("Está seguro que desea eliminar la pelicula?")
             if (result){
-                fetch(`http://localhost:10000/movies/${id}`, {
+                fetch(`${process.env.REACT_APP_BACKEND_URL}/movies/${id}`, {
                     method: 'DELETE',
                 })
                     .then(() => console.log('actualizado'))
